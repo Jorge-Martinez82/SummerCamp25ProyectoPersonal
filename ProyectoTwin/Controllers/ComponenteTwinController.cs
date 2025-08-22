@@ -40,7 +40,7 @@ namespace ProyectoTwin.Controllers
             try
             {
                 var (items, total) = await _service.GetPagedFilteredAsync(nombre, estadoReal, estadoDigital, numeroPagina, tamanoPagina);
-                return Ok(items);
+                return Ok(new { items, total });
             }
             catch (Exception ex)
             {

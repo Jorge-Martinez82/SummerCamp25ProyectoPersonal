@@ -1,5 +1,6 @@
+// ...existing code...
 import { Component, OnInit } from '@angular/core';
-import { ComponenteTwinService, ComponenteTwinDto } from '../../services/componente-twin.service';
+import { ComponenteTwinService, ComponenteTwinDto, ComponenteTwinResponse } from '../../services/componente-twin.service';
 
 
 @Component({
@@ -10,7 +11,11 @@ import { ComponenteTwinService, ComponenteTwinDto } from '../../services/compone
 })
 export class Monitor implements OnInit {
   componentes: ComponenteTwinDto[] = [];
-  loading = true;
+  totalRegistros: number = 0;
+  totalPaginas: number = 1;
+  paginaActual: number = 1;
+  tamanoPagina: number = 10;
+  loading = false;
   error: string | null = null;
 
   // Filtros
@@ -18,28 +23,26 @@ export class Monitor implements OnInit {
   estadoReal: string = '';
   estadoDigital: string = '';
 
-  // Paginación
-  numeroPagina: number = 1;
-  tamanoPagina: number = 10;
-
   constructor(private componenteTwinService: ComponenteTwinService) {}
 
   ngOnInit() {
-    this.cargarDatos();
+    this.buscar();
   }
 
-  cargarDatos() {
+  buscar() {
     this.loading = true;
     this.error = null;
     this.componenteTwinService.getComponentes(
       this.nombre || undefined,
       this.estadoReal || undefined,
       this.estadoDigital || undefined,
-      this.numeroPagina,
+      this.paginaActual,
       this.tamanoPagina
     ).subscribe({
-      next: (data) => {
-        this.componentes = data;
+      next: (resp: ComponenteTwinResponse) => {
+        this.componentes = resp.items;
+        this.totalRegistros = resp.total;
+        this.totalPaginas = Math.ceil(this.totalRegistros / this.tamanoPagina) || 1;
         this.loading = false;
       },
       error: (err) => {
@@ -49,21 +52,41 @@ export class Monitor implements OnInit {
     });
   }
 
-  buscar() {
-    this.numeroPagina = 1;
-    this.cargarDatos();
+  resetFiltros() {
+    this.nombre = '';
+    this.estadoReal = '';
+    this.estadoDigital = '';
+    this.paginaActual = 1;
+    this.buscar();
   }
 
-  paginaAnterior() {
-    if (this.numeroPagina > 1) {
-      this.numeroPagina--;
-      this.cargarDatos();
+
+
+  irPrimeraPagina(): void {
+    if (this.paginaActual > 1) {
+      this.paginaActual = 1;
+      this.buscar();
     }
   }
 
-  paginaSiguiente() {
-    // No sabemos el total, así que solo avanzamos
-    this.numeroPagina++;
-    this.cargarDatos();
+  irUltimaPagina(): void {
+    if (this.paginaActual < this.totalPaginas) {
+      this.paginaActual = this.totalPaginas;
+      this.buscar();
+    }
+  }
+
+  paginaAnterior(): void {
+    if (this.paginaActual > 1) {
+      this.paginaActual--;
+      this.buscar();
+    }
+  }
+
+  paginaSiguiente(): void {
+    if (this.paginaActual < this.totalPaginas) {
+      this.paginaActual++;
+      this.buscar();
+    }
   }
 }

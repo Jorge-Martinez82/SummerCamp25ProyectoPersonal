@@ -8,6 +8,6 @@ namespace ProyectoTwin.Services
     {
         Task<IEnumerable<ComponenteTwinDto>> GetAllAsync();
         Task<ComponenteTwinDto> GetByIdAsync(int id);
-        Task<(IEnumerable<ComponenteTwinDto> Items, int TotalCount)> GetPagedFilteredAsync(string nombre, string estadoReal, string estadoDigital, int numeroPagina, int tamanoPagina);
+        Task<(List<ComponenteTwinDto> Items, int TotalCount)> GetPagedFilteredAsync(string nombre, string estadoReal, string estadoDigital, int numeroPagina, int tamanoPagina);
     }
 }

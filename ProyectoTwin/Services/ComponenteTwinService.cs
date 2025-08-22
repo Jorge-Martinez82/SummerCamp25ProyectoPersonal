@@ -31,7 +31,7 @@ namespace ProyectoTwin.Services
             return componente == null ? null : _mapper.Map<ComponenteTwinDto>(componente);
         }
 
-        public async Task<(IEnumerable<ComponenteTwinDto> Items, int TotalCount)> GetPagedFilteredAsync(string nombre, string estadoReal, string estadoDigital, int numeroPagina, int tamanoPagina)
+        public async Task<(List<ComponenteTwinDto> Items, int TotalCount)> GetPagedFilteredAsync(string nombre, string estadoReal, string estadoDigital, int numeroPagina, int tamanoPagina)
         {
             var consulta = _context.ComponentesTwin.AsQueryable();
 
@@ -55,7 +55,7 @@ namespace ProyectoTwin.Services
 
             var total = await consulta.CountAsync();
             var items = await consulta.Skip((numeroPagina - 1) * tamanoPagina).Take(tamanoPagina).ToListAsync();
-            return (_mapper.Map<IEnumerable<ComponenteTwinDto>>(items), total);
+            return (_mapper.Map<List<ComponenteTwinDto>>(items), total);
         }
     }
 }
