@@ -10,6 +10,15 @@ var builder = WebApplication.CreateBuilder(args);
 // Configuración de la cadena de conexión (ajusta según tu entorno)
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? "Server=(localdb)\\mssqllocaldb;Database=ProyectoTwinDB;Trusted_Connection=True;MultipleActiveResultSets=true";
 
+// Configuración de CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("PermitirFrontend",
+        policy => policy.AllowAnyOrigin()
+                        .AllowAnyMethod()
+                        .AllowAnyHeader());
+});
+
 // Registro del contexto de base de datos
 builder.Services.AddDbContext<ContextBaseDatos>(options =>
     options.UseSqlServer(connectionString));
@@ -33,6 +42,9 @@ var app = builder.Build();
 
 // Seeding de datos ficticios al iniciar la aplicación
 dbSeed(app);
+
+// Habilitar CORS globalmente
+app.UseCors("PermitirFrontend");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
