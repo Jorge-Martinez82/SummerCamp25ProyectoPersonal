@@ -4,6 +4,7 @@ using ProyectoTwin.DTOs;
 using AutoMapper;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace ProyectoTwin.Services
 {
@@ -28,6 +29,33 @@ namespace ProyectoTwin.Services
         {
             var componente = await _context.ComponentesTwin.FindAsync(id);
             return componente == null ? null : _mapper.Map<ComponenteTwinDto>(componente);
+        }
+
+        public async Task<(IEnumerable<ComponenteTwinDto> Items, int TotalCount)> GetPagedFilteredAsync(string nombre, string estadoReal, string estadoDigital, int numeroPagina, int tamanoPagina)
+        {
+            var consulta = _context.ComponentesTwin.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(nombre))
+            {
+                nombre = nombre.Trim();
+                consulta = consulta.Where(c => c.Nombre.Contains(nombre));
+            }
+            if (!string.IsNullOrWhiteSpace(estadoReal))
+            {
+                estadoReal = estadoReal.Trim();
+                consulta = consulta.Where(c => c.EstadoReal == estadoReal);
+            }
+            if (!string.IsNullOrWhiteSpace(estadoDigital))
+            {
+                estadoDigital = estadoDigital.Trim();
+                consulta = consulta.Where(c => c.EstadoDigital == estadoDigital);
+            }
+
+            consulta = consulta.OrderBy(c => c.Nombre);
+
+            var total = await consulta.CountAsync();
+            var items = await consulta.Skip((numeroPagina - 1) * tamanoPagina).Take(tamanoPagina).ToListAsync();
+            return (_mapper.Map<IEnumerable<ComponenteTwinDto>>(items), total);
         }
     }
 }

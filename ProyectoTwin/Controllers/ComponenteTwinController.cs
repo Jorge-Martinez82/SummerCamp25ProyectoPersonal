@@ -19,19 +19,32 @@ namespace ProyectoTwin.Controllers
             _logger = logger;
         }
 
+        /// <summary>
+        /// Obtiene una lista paginada y filtrada de componentes twin.
+        /// </summary>
+        /// <param name="nombre">Filtrar por nombre (opcional)</param>
+        /// <param name="estadoReal">Filtrar por estado real (opcional)</param>
+        /// <param name="estadoDigital">Filtrar por estado digital (opcional)</param>
+        /// <param name="numeroPagina">Número de página (por defecto 1)</param>
+        /// <param name="tamanoPagina">Tamaño de página (por defecto 10)</param>
+        /// <returns>Lista paginada y filtrada de componentes twin y el total de elementos</returns>
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ComponenteTwinDto>>> GetAll()
+        public async Task<ActionResult<IEnumerable<ComponenteTwinDto>>> GetPagedFiltered(
+            [FromQuery] string? nombre = null,
+            [FromQuery] string? estadoReal = null,
+            [FromQuery] string? estadoDigital = null,
+            [FromQuery] int numeroPagina = 1,
+            [FromQuery] int tamanoPagina = 10)
         {
-            _logger.LogInformation("Obteniendo todos los componentes twin");
+            _logger.LogInformation("Obteniendo componentes twin paginados y filtrados");
             try
             {
-                var componentes = await _service.GetAllAsync();
-                _logger.LogInformation("Se obtuvieron {Count} componentes twin", componentes?.Count() ?? 0);
-                return Ok(componentes);
+                var (items, total) = await _service.GetPagedFilteredAsync(nombre, estadoReal, estadoDigital, numeroPagina, tamanoPagina);
+                return Ok(items);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error al obtener los componentes twin");
+                _logger.LogError(ex, "Error al obtener los componentes twin paginados y filtrados");
                 return StatusCode(500, "Error interno del servidor");
             }
         }
