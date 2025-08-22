@@ -1,7 +1,16 @@
+using ProyectoTwin.BaseDatos;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// Configuración de la cadena de conexión (ajusta según tu entorno)
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? "Server=(localdb)\\mssqllocaldb;Database=ProyectoTwinDB;Trusted_Connection=True;MultipleActiveResultSets=true";
 
+// Registro del contexto de base de datos
+builder.Services.AddDbContext<ContextBaseDatos>(options =>
+    options.UseSqlServer(connectionString));
+
+// Add services to the container.
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
