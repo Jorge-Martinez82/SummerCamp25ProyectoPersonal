@@ -1,5 +1,6 @@
 using ProyectoTwin.BaseDatos;
 using ProyectoTwin.Services;
+using ProyectoTwin.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,6 +14,9 @@ builder.Services.AddDbContext<ContextBaseDatos>(options =>
 
 // Registro del servicio ComponenteTwinService
 builder.Services.AddScoped<IComponenteTwinService, ComponenteTwinService>();
+
+// Registro del repositorio genérico
+builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
 // Add services to the container.
 builder.Services.AddControllers();
