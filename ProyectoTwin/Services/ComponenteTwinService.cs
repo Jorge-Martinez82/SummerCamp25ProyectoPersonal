@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using ProyectoTwin.BaseDatos;
 using ProyectoTwin.DTOs;
+using AutoMapper;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace ProyectoTwin.Services
@@ -10,44 +10,24 @@ namespace ProyectoTwin.Services
     public class ComponenteTwinService : IComponenteTwinService
     {
         private readonly ContextBaseDatos _context;
+        private readonly IMapper _mapper;
 
-        public ComponenteTwinService(ContextBaseDatos context)
+        public ComponenteTwinService(ContextBaseDatos context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         public async Task<IEnumerable<ComponenteTwinDto>> GetAllAsync()
         {
-            return await _context.ComponentesTwin
-                .Select(c => new ComponenteTwinDto
-                {
-                    IdComponente = c.IdComponente,
-                    Nombre = c.Nombre,
-                    TipoDatos = c.TipoDatos,
-                    EstadoReal = c.EstadoReal,
-                    EstadoDigital = c.EstadoDigital,
-                    UltimaActualizacion = c.UltimaActualizacion,
-                    IndicadorSostenibilidad = c.IndicadorSostenibilidad,
-                    MantenimientoProgramado = c.MantenimientoProgramado
-                })
-                .ToListAsync();
+            var entidades = await _context.ComponentesTwin.ToListAsync();
+            return _mapper.Map<IEnumerable<ComponenteTwinDto>>(entidades);
         }
 
         public async Task<ComponenteTwinDto> GetByIdAsync(int id)
         {
             var componente = await _context.ComponentesTwin.FindAsync(id);
-            if (componente == null) return null;
-            return new ComponenteTwinDto
-            {
-                IdComponente = componente.IdComponente,
-                Nombre = componente.Nombre,
-                TipoDatos = componente.TipoDatos,
-                EstadoReal = componente.EstadoReal,
-                EstadoDigital = componente.EstadoDigital,
-                UltimaActualizacion = componente.UltimaActualizacion,
-                IndicadorSostenibilidad = componente.IndicadorSostenibilidad,
-                MantenimientoProgramado = componente.MantenimientoProgramado
-            };
+            return componente == null ? null : _mapper.Map<ComponenteTwinDto>(componente);
         }
     }
 }

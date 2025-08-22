@@ -1,5 +1,6 @@
 using ProyectoTwin.BaseDatos;
 using ProyectoTwin.Services;
+using ProyectoTwin.Mappings;
 using ProyectoTwin.Repositories;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,6 +18,9 @@ builder.Services.AddScoped<IComponenteTwinService, ComponenteTwinService>();
 
 // Registro del repositorio genérico
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+
+// Registro de AutoMapper
+builder.Services.AddAutoMapper(typeof(ComponenteTwinProfile));
 
 // Add services to the container.
 builder.Services.AddControllers();
