@@ -1,1 +1,50 @@
-<p>monitor works!</p>
+<form (ngSubmit)="buscar()" style="margin-bottom: 1em;">
+	<label>
+		Nombre:
+		<input type="text" [(ngModel)]="nombre" name="nombre" />
+	</label>
+	<label>
+		Estado Real:
+		<input type="text" [(ngModel)]="estadoReal" name="estadoReal" />
+	</label>
+	<label>
+		Estado Digital:
+		<input type="text" [(ngModel)]="estadoDigital" name="estadoDigital" />
+	</label>
+	<button type="submit">Buscar</button>
+</form>
+
+<div *ngIf="loading">Cargando datos...</div>
+<div *ngIf="error">{{ error }}</div>
+<table *ngIf="!loading && !error">
+	<thead>
+		<tr>
+			<th>ID</th>
+			<th>Nombre</th>
+			<th>Tipo Datos</th>
+			<th>Estado Real</th>
+			<th>Estado Digital</th>
+			<th>Última Actualización</th>
+			<th>Indicador Sostenibilidad</th>
+			<th>Mantenimiento Programado</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr *ngFor="let c of componentes">
+			<td>{{ c.idComponente }}</td>
+			<td>{{ c.nombre }}</td>
+			<td>{{ c.tipoDatos }}</td>
+			<td>{{ c.estadoReal }}</td>
+			<td>{{ c.estadoDigital }}</td>
+			<td>{{ c.ultimaActualizacion }}</td>
+			<td>{{ c.indicadorSostenibilidad }}</td>
+			<td>{{ c.mantenimientoProgramado ? 'Sí' : 'No' }}</td>
+		</tr>
+	</tbody>
+</table>
+
+<div style="margin-top: 1em;" *ngIf="!loading && !error">
+	<button (click)="paginaAnterior()" [disabled]="numeroPagina === 1">Anterior</button>
+	<span>Página {{ numeroPagina }}</span>
+	<button (click)="paginaSiguiente()">Siguiente</button>
+</div>
