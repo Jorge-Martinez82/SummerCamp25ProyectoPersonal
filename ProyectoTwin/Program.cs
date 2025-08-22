@@ -1,4 +1,5 @@
 using ProyectoTwin.BaseDatos;
+using ProyectoTwin.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,6 +10,9 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 // Registro del contexto de base de datos
 builder.Services.AddDbContext<ContextBaseDatos>(options =>
     options.UseSqlServer(connectionString));
+
+// Registro del servicio ComponenteTwinService
+builder.Services.AddScoped<IComponenteTwinService, ComponenteTwinService>();
 
 // Add services to the container.
 builder.Services.AddControllers();
