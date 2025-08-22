@@ -51,7 +51,7 @@ namespace ProyectoTwin.Services
                 consulta = consulta.Where(c => c.EstadoDigital == estadoDigital);
             }
 
-            consulta = consulta.OrderBy(c => c.Nombre);
+            consulta = consulta.OrderBy(c => c.IdComponente);
 
             var total = await consulta.CountAsync();
             var items = await consulta.Skip((numeroPagina - 1) * tamanoPagina).Take(tamanoPagina).ToListAsync();
