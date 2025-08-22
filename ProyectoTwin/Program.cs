@@ -2,6 +2,7 @@ using ProyectoTwin.BaseDatos;
 using ProyectoTwin.Services;
 using ProyectoTwin.Mappings;
 using ProyectoTwin.Repositories;
+using ProyectoTwin.Seeding;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -30,6 +31,9 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+// Seeding de datos ficticios al iniciar la aplicación
+dbSeed(app);
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -44,3 +48,16 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+void dbSeed(WebApplication app)
+{
+    using var scope = app.Services.CreateScope();
+    var context = scope.ServiceProvider.GetRequiredService<ContextBaseDatos>();
+    if (!context.ComponentesTwin.Any())
+    {
+        var seeder = new DataSeeder();
+        var datos = seeder.GenerarComponentes(30); //  se generan 30
+        context.ComponentesTwin.AddRange(datos);
+        context.SaveChanges();
+    }
+}
